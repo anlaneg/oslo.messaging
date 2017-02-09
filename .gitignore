@@ -1,6 +1,8 @@
 AUTHORS
 ChangeLog
 *~
+.project
+.pydevproject
 *.swp
 *.pyc
 *.log
@@ -15,3 +17,5 @@ doc/source/api/
 dist/
 .testrepository/
 releasenotes/build
+.project
+.pydevproject
