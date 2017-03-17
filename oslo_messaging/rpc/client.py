@@ -136,6 +136,7 @@ class _BaseCallContext(object):
                     "Version must contain a major and minor integer. Got %s"
                     % version)
 
+    #走transport的_send函数
     def cast(self, ctxt, method, **kwargs):
         """Invoke a method and return immediately. See RPCClient.cast()."""
         msg = self._make_message(ctxt, method, kwargs)

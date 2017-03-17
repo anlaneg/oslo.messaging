@@ -1262,6 +1262,7 @@ class Connection(object):
                     "exchange %s doesn't exists" % exchange.name)
             raise
 
+    #动态创建direct交换器，并发送，路由键为msg_id
     def direct_send(self, msg_id, msg):
         """Send a 'direct' message."""
         exchange = kombu.entity.Exchange(name=msg_id,
@@ -1273,6 +1274,7 @@ class Connection(object):
         self._ensure_publishing(self._publish_and_raises_on_missing_exchange,
                                 exchange, msg, routing_key=msg_id)
 
+    #topic交换器，发送，路由键是topic
     def topic_send(self, exchange_name, topic, msg, timeout=None, retry=None):
         """Send a 'topic' message."""
         exchange = kombu.entity.Exchange(
@@ -1285,6 +1287,7 @@ class Connection(object):
                                 routing_key=topic, timeout=timeout,
                                 retry=retry)
 
+    #动态创建fanout交换器，并发送
     def fanout_send(self, topic, msg, retry=None):
         """Send a 'fanout' message."""
         exchange = kombu.entity.Exchange(name='%s_fanout' % topic,
@@ -1294,6 +1297,7 @@ class Connection(object):
 
         self._ensure_publishing(self._publish, exchange, msg, retry=retry)
 
+    #动态创建topic交换器，并发送，路由键是topic
     def notify_send(self, exchange_name, topic, msg, retry=None, **kwargs):
         """Send a notify message on a topic."""
         exchange = kombu.entity.Exchange(

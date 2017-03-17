@@ -44,6 +44,8 @@ _transport_opts = [
                secret=True,
                help='A URL representing the messaging driver to use and its '
                     'full configuration.'),
+    #举个例子，在我们使用neutron时，这里配置的是
+    #rpc_backend=neutron.openstack.common.rpc.impl_kombu
     cfg.StrOpt('rpc_backend',
                deprecated_for_removal=True,
                deprecated_reason="Replaced by [DEFAULT]/transport_url",
@@ -145,6 +147,7 @@ class DriverLoadFailure(exceptions.MessagingException):
         self.ex = ex
 
 
+#创建transport
 def get_transport(conf, url=None, allowed_remote_exmods=None, aliases=None):
     """A factory method for Transport objects.
 
@@ -185,6 +188,8 @@ def get_transport(conf, url=None, allowed_remote_exmods=None, aliases=None):
                   allowed_remote_exmods=allowed_remote_exmods)
 
     try:
+        #加载oslo.messaging.drivers　中的url.tansport.split('+')[0]对应的驱动,像rabbit
+        #当前rabbit = oslo_messaging._drivers.impl_rabbit:RabbitDriver
         mgr = driver.DriverManager('oslo.messaging.drivers',
                                    url.transport.split('+')[0],
                                    invoke_on_load=True,
@@ -193,6 +198,7 @@ def get_transport(conf, url=None, allowed_remote_exmods=None, aliases=None):
     except RuntimeError as ex:
         raise DriverLoadFailure(url.transport, ex)
 
+    #将加载的driver封装成Transport
     return Transport(mgr.driver)
 
 
@@ -395,10 +401,12 @@ class TransportURL(object):
         :returns: A TransportURL
         """
 
+        #如果函数没有指定url,则取配置中的url,
         if not url:
             conf.register_opts(_transport_opts)
         url = url or conf.transport_url
         if not url:
+            #如果配置也没有找定url,调cls
             return cls(conf, aliases=aliases)
 
         if not isinstance(url, six.string_types):
